@@ -3,8 +3,8 @@ title: "A3: Incarceration"
 output: html_document
 ---
 
-## Louisa Chen
-## 2/25/2022
+###### Louisa Chen
+###### 2/25/2022
 
 ``````{r, echo = FALSE, warning = FALSE, message = FALSE}
 data1 <- read.csv("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv")
@@ -21,7 +21,6 @@ library(ggmap)
 ```
 
 ### Introduction
-
 
 The incarceration rate varies from year to year in the United States. This may be due to demographic changes, policy changes, and the impact of social events each year. Many people will wonder which year had the largest number of incarcerated population. What happened in that year? And which state had the highest number of people incarcerated? This report examines data collected by the Vera Institute to provide a basic understanding of the complex issue in our society. 
 
@@ -40,9 +39,6 @@ Variables that will be analyzed:
 
 ``````{r, echo = FALSE, warning = FALSE, message = FALSE, code = readLines("summary.R")}
 ```
-
-
-
 
 According to data analysis of Vera’s report, the data set contains the data from `r data_year_earlist` to `r data_year_recent` Among these years, the highest total jail population among these years is `r data_year_highest`, with `r data_pop_highest` thousands of people in jail. In `r data_year_highest`, the state that has the highest total jail population is `r data_state_highest`, with `r data_state_pop_highest` thousands of people in jail. 
 
@@ -70,7 +66,7 @@ ggplot(data2) +
 ```
 
 
-This chart tells us the trends of in jail population in five states from 1970 to 2018. From 1970 to 1978 the in jail population continuously decrease in each year, and from this year the in jail population increased each year. Total US incarceration peaked in 2008. California and New York have always had large jail populations, which also correlated with the population density of these two states.
+This chart tells us the trends of in jail population in CA, DC, NY, UT, and WA states from 1970 to 2018. I choose the 5 states because these are the only five states I have visited in the U.S.. From 1970 to 1978, the in jail population continuously decrease in each year, and from 1978 the in jail population begin increase. Also, the total US incarceration peaked in 2008. Among the five states, California and New York state have always had large jail populations, which also correlated with the population density of these two states.
 
 
 ### Variable Comparison Chart
@@ -125,11 +121,10 @@ state_shape <- left_join(state_shape, state_data1)
 ggplot(state_shape) +
   geom_polygon(mapping = aes(x = long, y = lat, group = group, fill = data_2008)) + scale_fill_continuous(low = 'white', high ='red', labels = scales::label_number_si()) +
   coord_map() +
-  labs(title = 'Map of 2008 jail population distribution',
+  labs(title = 'Map of 2008 jail population distribution in U.S.',
        x = "",
        y = "")
 ```
 
 
-
-This is a map that reflects the total jail population distribution in U.S. in 2008. In the graph, the color red means the jail population density is high and the color white means the jail population density is low. We can see that California has the highest population in jail, which also consistent with the calculation result. We can also see that the number of incarcerated people is higher in the eastern part of the country than in the central part of the United States because of the higher population density in the east. 
+This is a map that reflects the total jail population distribution in U.S. in 2008. In the graph, the color red means the jail population density is high and the color white means the jail population density is low. We can see that California has the highest population in jail, which also consistent with the calculation result. We can also see that the number of people in jail is higher in the eastern part of the country than in the central part of the United States because of the higher population density in the east. 
