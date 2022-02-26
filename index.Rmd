@@ -3,69 +3,133 @@ title: "A3: Incarceration"
 output: html_document
 ---
 
+## Louisa Chen
+## 2/25/2022
+
+``````{r, echo = FALSE, warning = FALSE, message = FALSE}
+data1 <- read.csv("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv")
+library(ggmap)
+library(maps)
+library(mapproj)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library("mapproj")
+library("maps")
+library("mapdata")
+library(ggmap)
+```
+
 ### Introduction
 
-An introduction of the problem domain and a description of the variable(s) you are choosing to analyze (and why!)
+
+The incarceration rate varies from year to year in the United States. This may be due to demographic changes, policy changes, and the impact of social events each year. Many people will wonder which year had the largest number of incarcerated population. What happened in that year? And which state had the highest number of people incarcerated? This report examines data collected by the Vera Institute to provide a basic understanding of the complex issue in our society. 
+
+Variables that will be analyzed:
+
+* Time: What is the trend in incarceration? Which year has the highest total jail population? Time is the variable that can show the trend will tell people incarceration will be going in the future. 
+
+* Total jail population VS black jail population (2008): Is the black jail population in the United States related to the total jail population in each county? What does the incarceration rate for blacks look like? This will tell us the connection.
+
+* Total jail population VS White jail population (2008): Is the white jail population in the United States related to the total jail population in each county? What does the incarceration rate for white look like? This will tell us the connection.
+
+* States: I chose to focus on five states, including California, Washington, D.C., Utah, and New York. Because as an international student, these are the only five states I have visited in the U.S., I wanted to study the incarceration rates in the states I have visited.
+
 
 ### Summary Information
 
-Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
+``````{r, echo = FALSE, warning = FALSE, message = FALSE, code = readLines("summary.R")}
+```
 
-These will likely be calculated using your DPLYR skills, answering questions such as: 
 
-- What is the average value of my variable across all the counties (in the current year)?
-- Where is my variable the highest / lowest?
-- How much has my variable change over the last N years?
 
-Feel free to calculate and report values that you find relevant. Again, remember that the purpose is to think about how these measure of incarceration vary by race.
+
+According to data analysis of Vera’s report, the data set contains the data from `r data_year_earlist` to `r data_year_recent` Among these years, the highest total jail population among these years is `r data_year_highest`, with `r data_pop_highest` thousands of people in jail. In `r data_year_highest`, the state that has the highest total jail population is `r data_state_highest`, with `r data_state_pop_highest` thousands of people in jail. 
 
 ### The Dataset
 
-Who collected the data?  
-How was the data collected or generated?  
-Why was the data collected?  
-How many observations (rows) are in your data?  
-How many features (columns) are in the data?  
-What, if any, ethical questions or questions of power do you need to consider when working with this data?  
-What are possible limitations or problems with this data?   (at least 200 words)
-
+The data was collected by the U.S. Department of Justice Bureau of Justice Statistics (BJS). The BJS datasets included NCRP, DCRP, ASJ, and COJ. These 4 programs provide detailed individual-level data on admissions and releases from state prison authorities, including county of commitment. The data is collected because the institution wants to provide detail on the sources and variables in the Incarceration Trends dataset in order to make people easily to visualize the data. There are 153811 rows and 121 columns in the dataset. When we work with the data, we need to consider to protect individual’s privacy. We can focus on big data to visualize the dataset, instead of just focus on one row of the data. There’s may be some limitations with the data, including the inconsistencies and/or errors existing in the data. For example, data will be collected from different sources or in different institution. These data can vary in quality and format, such as in surveys, e-mails, or data-entry forms. Such data requires major preprocessing before it’s analysis-ready. Also, If the program using data from surveys, we need to consider that people may not always provide accurate information. People may not be dishonest so much as self-conscious, but the data is still skewed.  
 
 ### Trends Over Time Chart
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+``````{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-The first chart that you will create and include will show the trend over time of your variable/topic. Think carefully about what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
+data2 <- summarize(group_by (data1, state, year, total_jail_pop)) %>% 
+  filter(state == "UT" | state =="WA" | state =="CA" | state == "NY" | state == "DC")
 
-- Show more than one, but fewer than ~10 trends
-  - This may mean showing the same measure for different locations or different racial groups. Think carefully about a meaningful comparison of locations (e.g., the top 10 counties in a state, top 10 states, etc.)
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- You need a legend for your different line colors and a clear legend title
+data2 <- group_by(data2, year, state) %>% 
+  summarize(total_jail_pop =sum(total_jail_pop, na.rm = TRUE))
 
-When we say "clear" or "human readable" titles and labels, that means that you should not just display the variable name.
 
-Here's an example of how to run an R script inside an RMarkdown file:
 
-``````{r, echo = FALSE, code = readLines("chart1_example.R")}
+ggplot(data2) +
+  geom_line(mapping = aes(x = year, y = total_jail_pop, color = state)) + 
+  labs(title = "Trends of five states in jail population from 1970 to 2018")
+
+
 ```
+
+
+This chart tells us the trends of in jail population in five states from 1970 to 2018. From 1970 to 1978 the in jail population continuously decrease in each year, and from this year the in jail population increased each year. Total US incarceration peaked in 2008. California and New York have always had large jail populations, which also correlated with the population density of these two states.
+
 
 ### Variable Comparison Chart
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+``````{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-The second chart that you will create and include will show how two different (continuous) variables are related to one another. Again, think carefully about what such a comparison means and what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
+data3 <- summarize(group_by(data1, black_jail_pop, white_jail_pop, year, county_name, total_jail_pop)) %>% 
+  filter(year == 2008)
 
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- If you choose to add a color encoding (not required), you need a legend for your different color and a clear legend title
+data3 <- group_by (data3, county_name)%>% 
+  summarize(black_jail_pop = sum(black_jail_pop, na.rm = TRUE), white_jail_pop = sum (white_jail_pop, na.rm = TRUE), total_jail_pop = sum (total_jail_pop, na.rm = TRUE))
+
+black_jail_chart <- ggplot(data3) +
+  geom_point(mapping = aes(x=total_jail_pop, y= black_jail_pop)) + labs( title = "Black vs Total Jail Population in Year of 2008",
+                                                                         x = "Total Jail Population",
+                                                                         y = "Black Jail Population")
+
+white_jail_chart <- ggplot(data3) +
+  geom_point(mapping = aes(x= total_jail_pop, y= white_jail_pop)) + labs (title = "White vs Total Jail Population in Year of 2008", 
+                                                                          x = "Total Jail Population",
+                                                                          y = "White Jail Population")
+
+ggarrange(black_jail_chart, white_jail_chart + rremove("x.text"),
+          ncol = 1, nrow = 2) 
+
+
+
+```
+
+
+These two charts tell us the trend of the total jail population and the total population of different races in jail in each county in the United States in 2008. Each dot in the figure represents a county. We can see that the slope in the second graph (White vs Total Jail Population in Year of 2008) is steeper that the first graph (Black vs Total Jail Population in Year of 2008), which means the incarcerate rate among white population is higher than black population. 
+
 
 ### Map
+``````{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+state_data1 <- data1 %>% 
+  group_by (state) %>%
+  filter(year == 2008) %>% 
+  summarize(data_2008 = sum(female_jail_pop, na.rm = TRUE))
 
-The last chart that you will create and include will show how a variable is distributed geographically. Again, think carefully about what such a comparison means and what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
+state_shape <- map_data ('state')
 
-- Your map needs a title
-- Your color scale needs a legend with a clear label
-- Use a map based coordinate system to set the aspect ratio of your map
-- Use a minimalist theme for the map 
+state_abbrevs <- data.frame (state.abb, state.name)
+
+state_data1 <-  left_join (state_data1, state_abbrevs, by=c('state' = 'state.abb'))
+
+state_data1 <- state_data1 %>% mutate(region = tolower(state.name))
+
+state_shape <- left_join(state_shape, state_data1)
+
+ggplot(state_shape) +
+  geom_polygon(mapping = aes(x = long, y = lat, group = group, fill = data_2008)) + scale_fill_continuous(low = 'white', high ='red', labels = scales::label_number_si()) +
+  coord_map() +
+  labs(title = 'Map of 2008 jail population distribution',
+       x = "",
+       y = "")
+```
+
+
+
+This is a map that reflects the total jail population distribution in U.S. in 2008. In the graph, the color red means the jail population density is high and the color white means the jail population density is low. We can see that California has the highest population in jail, which also consistent with the calculation result. We can also see that the number of incarcerated people is higher in the eastern part of the country than in the central part of the United States because of the higher population density in the east. 
